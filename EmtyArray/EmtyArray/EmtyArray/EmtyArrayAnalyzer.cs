@@ -1,12 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 namespace EmtyArray
 {
@@ -31,7 +28,45 @@ namespace EmtyArray
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
-            // Your diagnostic registration here
+            context.RegisterOperationAction(AnalyzeReturnStatement, OperationKind.Return);
+        }
+
+        private void AnalyzeReturnStatement(OperationAnalysisContext context)
+        {
+            // On recupere notre operation de retour depuis le context
+            var operation = context.Operation as IReturnOperation;
+
+            // on récupere l'arbre syntaxique et le modele sementique de cette operation
+            var syntaxTree = context.Operation.Syntax;
+            var sementicModel = context.Operation.SemanticModel;
+
+            // on parcoure touts les noeuds de notre operation pour voir
+            // si il y a une operation de creation de tableau dans notre operation de retour
+            var arrayCreationExpression = syntaxTree.ChildNodes()
+                .SingleOrDefault(el => el.Kind() == SyntaxKind.ArrayCreationExpression);
+
+            // si on arrive a trouver une operation de creation de tableau dans notre "return"
+            if (arrayCreationExpression != null)
+            {
+                // on demande a notre senticModel plus d'information sur notre operation
+                // comme ça on peut avoir la dimension du tableau
+                var arrayCreationOp = (IArrayCreationOperation)sementicModel.GetOperation(arrayCreationExpression);
+
+                if (IsArrayEmpty(arrayCreationOp))
+                {
+                    // si notre tableau est vide on crée un diagnostique et le signale
+                    var diagnostic = Diagnostic.Create(Rule, syntaxTree.GetLocation());
+
+                    context.ReportDiagnostic(diagnostic);
+                }
+            }
+
+            bool IsArrayEmpty(IArrayCreationOperation arrayCreationOp)
+            {
+                return arrayCreationOp.DimensionSizes.First().ConstantValue.HasValue
+                    && (int)arrayCreationOp.DimensionSizes.First().ConstantValue.Value == 0;
+            }
+
         }
 
 

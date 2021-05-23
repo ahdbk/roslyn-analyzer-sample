@@ -43,7 +43,7 @@ Latest commit 1b54f57 on 6 Apr 2017
 *.user
 *.userosscache
 *.sln.docstates
-
+.vs
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
