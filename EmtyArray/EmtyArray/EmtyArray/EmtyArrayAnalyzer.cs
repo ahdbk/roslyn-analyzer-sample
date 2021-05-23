@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -17,7 +18,7 @@ namespace EmtyArray
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
-        private const string Category = "Naming";
+        private const string Category = "Syntax";
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
@@ -28,8 +29,10 @@ namespace EmtyArray
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
+            // On enregistre une action qui va se déclancher pour chaque operation de "return" détectée
             context.RegisterOperationAction(AnalyzeReturnStatement, OperationKind.Return);
         }
+
 
         private void AnalyzeReturnStatement(OperationAnalysisContext context)
         {
@@ -48,7 +51,7 @@ namespace EmtyArray
             // si on arrive a trouver une operation de creation de tableau dans notre "return"
             if (arrayCreationExpression != null)
             {
-                // on demande a notre senticModel plus d'information sur notre operation
+                // on demande a notre sementicModel plus d'information sur notre operation
                 // comme ça on peut avoir la dimension du tableau
                 var arrayCreationOp = (IArrayCreationOperation)sementicModel.GetOperation(arrayCreationExpression);
 

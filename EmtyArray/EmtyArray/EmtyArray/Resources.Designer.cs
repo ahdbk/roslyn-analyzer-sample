@@ -70,7 +70,7 @@ namespace EmtyArray {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Emty array returned.
+        ///   Looks up a localized string similar to Emty array returned. You can use Array.Empty syntax.
         /// </summary>
         internal static string AnalyzerMessageFormat {
             get {
@@ -79,7 +79,7 @@ namespace EmtyArray {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Emty array returned.
+        ///   Looks up a localized string similar to Emty array returned. You can use Array.Empty syntax.
         /// </summary>
         internal static string AnalyzerTitle {
             get {
