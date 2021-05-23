@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -28,8 +29,10 @@ namespace EmtyArray
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
+            // On enregistre une action qui va se déclancher pour chaque operation de "return" détectée
             context.RegisterOperationAction(AnalyzeReturnStatement, OperationKind.Return);
         }
+
 
         private void AnalyzeReturnStatement(OperationAnalysisContext context)
         {
@@ -48,7 +51,7 @@ namespace EmtyArray
             // si on arrive a trouver une operation de creation de tableau dans notre "return"
             if (arrayCreationExpression != null)
             {
-                // on demande a notre senticModel plus d'information sur notre operation
+                // on demande a notre sementicModel plus d'information sur notre operation
                 // comme ça on peut avoir la dimension du tableau
                 var arrayCreationOp = (IArrayCreationOperation)sementicModel.GetOperation(arrayCreationExpression);
 

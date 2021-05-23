@@ -122,11 +122,11 @@
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>Emty array returned</value>
+    <value>Emty array returned. You can use Array.Empty syntax</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Emty array returned</value>
+    <value>Emty array returned. You can use Array.Empty syntax</value>
     <comment>The title of the diagnostic.</comment>
   </data>
 </root>
